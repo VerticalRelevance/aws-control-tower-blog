@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "LambdaAccountId",
+    "ParameterValue": "XXXX_CHANGE_ME_XXXXXXX"
+  }, 
+  {
+    "ParameterKey": "configlifecycleruledaysToRetain",
+    "ParameterValue": "2555"
+  }, 
+  {
+    "ParameterKey": "configlifecycleruletag",
+    "ParameterValue": "FINRA"
+  }
+]

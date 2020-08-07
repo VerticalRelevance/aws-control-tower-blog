@@ -1,0 +1,13 @@
+{
+  "Version": "1.0",
+  "Parameters": {
+    "RuleName": "S3_BUCKET_LIFECYCLE",
+    "Description": "Check if S3 Bucket has a 7 year retention policy",
+    "SourceRuntime": "python3.7",
+    "CodeKey": "S3_BUCKET_LIFECYCLE.zip",
+    "InputParameters": "{\"daysToRetain\": \"2555\", \"tag\": \"FINRA\"}",
+    "OptionalParameters": "{}",
+    "SourceEvents": "AWS::S3::Bucket"
+  },
+  "Tags": "[]"
+}
