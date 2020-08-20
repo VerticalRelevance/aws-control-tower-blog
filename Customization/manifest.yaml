@@ -13,6 +13,6 @@ cloudformation_resources:
     deploy_to_account: []
     deploy_to_ou:
       - Core
-      - BU1
+      - BU1-FINRA-Dev
     regions:
       - us-east-1
