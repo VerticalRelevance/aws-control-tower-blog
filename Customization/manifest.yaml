@@ -6,13 +6,11 @@ version: 2020-01-01
 
 # Control Tower Custom CloudFormation Resources
 cloudformation_resources:
-  - name: config-s3-lifecycle-rule
-    template_file: config-s3-lifecycle-cft.json
-    parameter_file: config-s3-lifecycle-params.json
+  - name: config-s3-lifecycle-lambda
+    template_file: config-s3-lifecycle-lambda-cft.json
+    parameter_file: config-s3-lifecycle-lambda-params.json
     deploy_method: stack_set
-    deploy_to_account: []
     deploy_to_ou:
-      - Core
-      - BU1-FINRA-Dev
+      - Business Unit 1 FINRA
     regions:
       - us-east-1

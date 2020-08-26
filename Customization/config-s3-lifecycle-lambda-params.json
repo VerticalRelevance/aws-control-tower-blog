@@ -1,0 +1,6 @@
+[
+  {
+    "ParameterKey": "SourceBucket",
+    "ParameterValue": "ct-lambda-functions-blog"
+  }
+]

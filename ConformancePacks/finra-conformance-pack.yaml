@@ -86,5 +86,5 @@ Resources:
             EventSource: "aws.config"
             MessageType: "ConfigurationItemChangeNotification"
         SourceIdentifier: 
-          Ref: CustomConfigRuleLambdaArn
+          Fn::Sub: "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:RDK-Rule-Function-config-s3-lifecycle-rule"
 

@@ -1,0 +1,134 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS CloudFormation template to create Lamdba functions for backing custom AWS Config rules. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Parameters": {
+      "SourceBucket": {
+        "Description": "Name of the S3 bucket that you have stored the rule zip files in.",
+        "Type": "String",
+        "MinLength": "1",
+        "MaxLength": "255"
+      }
+    },
+    "Resources": {
+      "rdkLambdaRole": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "Path": "/rdk/",
+          "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "AllowLambdaAssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "lambda.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+              }
+            ]
+          },
+          "Policies": [
+            {
+              "PolicyName": "ConfigRulePolicy",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Sid": "1",
+                    "Action": [
+                      "s3:GetObject"
+                    ],
+                    "Effect": "Allow",
+                    "Resource": {
+                      "Fn::Sub": "arn:${AWS::Partition}:s3:::${SourceBucket}/*"
+                    }
+                  },
+                  {
+                    "Sid": "2",
+                    "Action": [
+                      "logs:CreateLogGroup",
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents",
+                      "logs:DescribeLogStreams"
+                    ],
+                    "Effect": "Allow",
+                    "Resource": "*"
+                  },
+                  {
+                    "Sid": "3",
+                    "Action": [
+                      "config:PutEvaluations"
+                    ],
+                    "Effect": "Allow",
+                    "Resource": "*"
+                  },
+                  {
+                    "Sid": "4",
+                    "Action": [
+                      "iam:List*",
+                      "iam:Describe*",
+                      "iam:Get*"
+                    ],
+                    "Effect": "Allow",
+                    "Resource": "*"
+                  },
+                  {
+                    "Sid": "5",
+                    "Action": [
+                      "sts:AssumeRole"
+                    ],
+                    "Effect": "Allow",
+                    "Resource": "*"
+                  }
+                ]
+              }
+            }
+          ],
+          "ManagedPolicyArns": [
+            {
+              "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/ReadOnlyAccess"
+            }
+          ]
+        }
+      },
+      "configs3lifecycleruleLambdaFunction": {
+        "Type": "AWS::Lambda::Function",
+        "DependsOn": "rdkLambdaRole",
+        "Properties": {
+          "FunctionName": "RDK-Rule-Function-config-s3-lifecycle-rule",
+          "Code": {
+            "S3Bucket": {
+              "Ref": "SourceBucket"
+            },
+            "S3Key": "config-s3-lifecycle-rule/config-s3-lifecycle-rule.zip"
+          },
+          "Description": "Function for AWS Config Rule config-s3-lifecycle-rule",
+          "Handler": "config-s3-lifecycle-rule.lambda_handler",
+          "MemorySize": "256",
+          "Role": {
+            "Fn::GetAtt": [
+              "rdkLambdaRole",
+              "Arn"
+            ]
+          },
+          "Runtime": "python3.7",
+          "Timeout": 300,
+          "Tags": []
+        }
+      },
+      "configs3lifecycleruleLambdaPermissions": {
+        "Type": "AWS::Lambda::Permission",
+        "DependsOn": "configs3lifecycleruleLambdaFunction",
+        "Properties": {
+          "FunctionName": {
+            "Fn::GetAtt": [
+              "configs3lifecycleruleLambdaFunction",
+              "Arn"
+            ]
+          },
+          "Action": "lambda:InvokeFunction",
+          "Principal": "config.amazonaws.com"
+        }
+      }
+    }
+  }
